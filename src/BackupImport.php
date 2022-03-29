@@ -4,7 +4,6 @@ namespace Yaroslavpopovic\LaravelBackupImport;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -134,13 +133,13 @@ class BackupImport
         Artisan::call('up');
     }
 
-    private function truncateAllDb()
+    private function dropAllTables()
     {
 
         Schema::disableForeignKeyConstraints();
-        foreach (Schema::getConnection()->getDoctrineSchemaManager()->listTableNames() as $name) {
-            $this->info('Truncate '.$name);
-            DB::table($name)->truncate();
+        foreach (Schema::getConnection()->getDoctrineSchemaManager()->listTableNames() as $table) {
+            Schema::drop($table);
         }
+        Schema::enableForeignKeyConstraints();
     }
 }
