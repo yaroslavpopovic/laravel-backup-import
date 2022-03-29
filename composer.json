@@ -15,8 +15,7 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.3|^8.0",
-        "doctrine/dbal": "4.0.x-dev"
+        "php": "^7.3|^8.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",

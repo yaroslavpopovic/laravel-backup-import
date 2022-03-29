@@ -115,7 +115,7 @@ class BackupImport
 
         Artisan::call('down');
 
-        $this->dropAllTables();
+        Artisan::call('db:wipe', ['--force' => true]);
 
         $host = config('database.connections.mysql.host');
         $username = config('database.connections.mysql.username');
@@ -133,14 +133,5 @@ class BackupImport
         Artisan::call('migrate', ['--force' => true]);
 
         Artisan::call('up');
-    }
-
-    private function dropAllTables()
-    {
-        Schema::disableForeignKeyConstraints();
-        foreach (Schema::getConnection()->getDoctrineSchemaManager()->listTableNames() as $table) {
-            Schema::drop($table);
-        }
-        Schema::enableForeignKeyConstraints();
     }
 }
