@@ -1,0 +1,35 @@
+{
+    "name": "yaroslavpopovic/laravel-backup-import",
+    "description": "Import db from sql file",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Yaroslavpopovic\\LaravelBackupImport\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yaroslavpopovic\\LaravelBackupImport\\Tests\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.3|^8.0",
+        "illuminate/contracts": "^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.5.9"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Yaroslavpopovic\\LaravelBackupImport\\LaravelBackupImportServiceProvider"
+            ]
+        }
+    }
+}
