@@ -115,6 +115,8 @@ class BackupImport
 
         Artisan::call('down');
 
+        $this->dropAllTables();
+
         $host = config('database.connections.mysql.host');
         $username = config('database.connections.mysql.username');
         $password = config('database.connections.mysql.password');
