@@ -137,7 +137,6 @@ class BackupImport
 
     private function dropAllTables()
     {
-
         Schema::disableForeignKeyConstraints();
         foreach (Schema::getConnection()->getDoctrineSchemaManager()->listTableNames() as $table) {
             Schema::drop($table);
