@@ -4,6 +4,8 @@ namespace Yaroslavpopovic\LaravelBackupImport;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
@@ -112,7 +114,7 @@ class BackupImport
             throw new \Exception(__("Non è stato possibile trovare il backup del database scaricato"));
         }
 
-        Artisan::call('migrate:fresh');
+        Artisan::call('down');
 
         $host = config('database.connections.mysql.host');
         $username = config('database.connections.mysql.username');
@@ -126,5 +128,19 @@ class BackupImport
             $db,
             $this->destinationDisk->path($sqlFileName)
         ))->mustRun();
+
+        Artisan::call('migrate', ['--force' => true]);
+
+        Artisan::call('up');
+    }
+
+    private function truncateAllDb()
+    {
+
+        Schema::disableForeignKeyConstraints();
+        foreach (Schema::getConnection()->getDoctrineSchemaManager()->listTableNames() as $name) {
+            $this->info('Truncate '.$name);
+            DB::table($name)->truncate();
+        }
     }
 }
