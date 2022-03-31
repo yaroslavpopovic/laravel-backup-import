@@ -3,6 +3,7 @@
 namespace Yaroslavpopovic\LaravelBackupImport;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -115,22 +116,25 @@ class BackupImport
 
         Artisan::call('down');
 
-        Artisan::call('db:wipe', ['--force' => true]);
+        Model::withoutEvents(function() use ($sqlFileName) {
+            Artisan::call('db:wipe', ['--force' => true]);
 
-        $host = config('database.connections.mysql.host');
-        $username = config('database.connections.mysql.username');
-        $password = config('database.connections.mysql.password');
-        $db = config('database.connections.mysql.database');
-        Process::fromShellCommandline(sprintf(
-            'mysql -h%s -u%s -p%s %s < %s',
-            $host,
-            $username,
-            $password,
-            $db,
-            $this->destinationDisk->path($sqlFileName)
-        ))->mustRun();
+            $host = config('database.connections.mysql.host');
+            $username = config('database.connections.mysql.username');
+            $password = config('database.connections.mysql.password');
+            $db = config('database.connections.mysql.database');
+            Process::fromShellCommandline(sprintf(
+                'mysql -h%s -u%s -p%s %s < %s',
+                $host,
+                $username,
+                $password,
+                $db,
+                $this->destinationDisk->path($sqlFileName)
+            ))->mustRun();
 
-        Artisan::call('migrate', ['--force' => true]);
+            Artisan::call('migrate', ['--force' => true]);
+        });
+
 
         Artisan::call('up');
     }
