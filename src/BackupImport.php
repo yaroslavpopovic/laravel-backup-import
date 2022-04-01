@@ -127,7 +127,7 @@ class BackupImport
                 'mysql -h%s -u%s -p%s %s < %s',
                 $host,
                 $username,
-                $password,
+                $password ?? "",
                 $db,
                 $this->destinationDisk->path($sqlFileName)
             ))->mustRun();
