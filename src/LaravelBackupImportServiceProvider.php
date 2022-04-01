@@ -1,6 +1,7 @@
 <?php
 namespace Yaroslavpopovic\LaravelBackupImport;
 use Illuminate\Support\ServiceProvider;
+use Yaroslavpopovic\LaravelBackupImport\Console\Commands\BackupImport;
 
 class LaravelBackupImportServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,9 @@ class LaravelBackupImportServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishResources();
+            $this->commands([
+                BackupImport::class
+            ]);
         }
     }
 
