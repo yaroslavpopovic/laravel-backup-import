@@ -130,7 +130,8 @@ class BackupImport
                 $password ?? "",
                 $db,
                 $this->destinationDisk->path($sqlFileName)
-            ))->mustRun();
+            ), null, null, null, null)
+                ->mustRun();
 
             Artisan::call('migrate', ['--force' => true]);
         });
