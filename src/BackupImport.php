@@ -119,19 +119,40 @@ class BackupImport
         Model::withoutEvents(function() use ($sqlFileName) {
             Artisan::call('db:wipe', ['--force' => true]);
 
-            $host = config('database.connections.mysql.host');
-            $username = config('database.connections.mysql.username');
-            $password = config('database.connections.mysql.password');
-            $db = config('database.connections.mysql.database');
-            Process::fromShellCommandline(sprintf(
-                'mysql -h%s -u%s -p%s %s < %s',
-                $host,
-                $username,
-                $password ?? "",
-                $db,
-                $this->destinationDisk->path($sqlFileName)
-            ), null, null, null, null)
-                ->mustRun();
+            $connection = config('database.default');
+            $driver = config("database.connections.{$connection}.driver");
+            $host = config("database.connections.{$connection}.host");
+            $username = config("database.connections.{$connection}.username");
+            $password = config("database.connections.{$connection}.password");
+            $db = config("database.connections.{$connection}.database");
+            $port = config("database.connections.{$connection}.port");
+
+            if ($driver === 'pgsql')
+            {
+                Process::fromShellCommandline(sprintf(
+                    'PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -f %s',
+                    $password ?? '',
+                    $host,
+                    $port ?? '5432',
+                    $username,
+                    $db,
+                    $this->destinationDisk->path($sqlFileName)
+                ), null, null, null, null)
+                    ->mustRun();
+            }
+            else
+            {
+                Process::fromShellCommandline(sprintf(
+                    'mysql -h%s -P%s -u%s -p%s %s < %s',
+                    $host,
+                    $port ?? '3306',
+                    $username,
+                    $password ?? '',
+                    $db,
+                    $this->destinationDisk->path($sqlFileName)
+                ), null, null, null, null)
+                    ->mustRun();
+            }
 
             Artisan::call('migrate', ['--force' => true]);
         });
